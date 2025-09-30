@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import axios from "axios";
+import styles from './page.module.css';
 
 export default function Edit() {
     const [commentId, setCommentId] = useState("");
@@ -43,53 +44,92 @@ export default function Edit() {
     };
 
     return (
-        <div>
-            <h1>Editar Comentário</h1>
+        <div className={styles.container}>
+            <h1 className={styles.title}>Editar Comentário</h1>
 
-            <div>
-                <input
-                    type="number"
-                    value={commentId}
-                    onChange={(e) => setCommentId(e.target.value)}
-                    placeholder="ID do comentário"
-                />
-                <button onClick={buscarComentario} disabled={loading}>
-                    {loading ? "Buscando..." : "Buscar"}
-                </button>
+            <div className={styles.searchSection}>
+                <div className={styles.searchGroup}>
+                    <input
+                        type="number"
+                        value={commentId}
+                        onChange={(e) => setCommentId(e.target.value)}
+                        placeholder="ID do comentário"
+                        className={styles.searchInput}
+                    />
+                    <button 
+                        onClick={buscarComentario} 
+                        disabled={loading || !commentId}
+                        className={styles.searchButton}
+                    >
+                        {loading ? (
+                            <div className={styles.loading}>
+                                <div className={styles.spinner}></div>
+                                Buscando...
+                            </div>
+                        ) : "Buscar"}
+                    </button>
+                </div>
             </div>
 
             {form.name && (
-                <div>
-                    <h2>Editando Comentário #{commentId}</h2>
-                    <input
-                        type="text"
-                        value={form.name}
-                        onChange={(e) => setForm({ ...form, name: e.target.value })}
-                        placeholder="Nome"
-                    />
-                    <br />
-                    <input
-                        type="email"
-                        value={form.email}
-                        onChange={(e) => setForm({ ...form, email: e.target.value })}
-                        placeholder="Email"
-                    />
-                    <br />
-                    <textarea
-                        value={form.body}
-                        onChange={(e) => setForm({ ...form, body: e.target.value })}
-                        placeholder="Comentário"
-                        rows="3"
-                    />
-                    <br />
-                    <button onClick={editarComentario} disabled={loading || !form.name?.trim()}>
-                        {loading ? "Salvando..." : "Salvar Alterações"}
+                <div className={styles.editSection}>
+                    <h2 className={styles.editTitle}>Editando Comentário #{commentId}</h2>
+                    
+                    <div className={styles.formGroup}>
+                        <input
+                            type="text"
+                            value={form.name}
+                            onChange={(e) => setForm({ ...form, name: e.target.value })}
+                            placeholder="Nome"
+                            className={styles.input}
+                        />
+                    </div>
+                    
+                    <div className={styles.formGroup}>
+                        <input
+                            type="email"
+                            value={form.email}
+                            onChange={(e) => setForm({ ...form, email: e.target.value })}
+                            placeholder="Email"
+                            className={styles.input}
+                        />
+                    </div>
+                    
+                    <div className={styles.formGroup}>
+                        <textarea
+                            value={form.body}
+                            onChange={(e) => setForm({ ...form, body: e.target.value })}
+                            placeholder="Comentário"
+                            rows="3"
+                            className={styles.textarea}
+                        />
+                    </div>
+                    
+                    <button 
+                        onClick={editarComentario} 
+                        disabled={loading || !form.name?.trim()}
+                        className={styles.saveButton}
+                    >
+                        {loading ? (
+                            <div className={styles.loading}>
+                                <div className={styles.spinner}></div>
+                                Salvando...
+                            </div>
+                        ) : "Salvar Alterações"}
                     </button>
                 </div>
             )}
 
-            {error && <p style={{ color: "red" }}>❌ Erro na operação</p>}
-            {success && <p style={{ color: "green" }}>✅ Comentário editado com sucesso!</p>}
+            {error && (
+                <div className={`${styles.message} ${styles.error}`}>
+                    ❌ Erro na operação
+                </div>
+            )}
+            {success && (
+                <div className={`${styles.message} ${styles.success}`}>
+                    ✅ Comentário editado com sucesso!
+                </div>
+            )}
         </div>
     );
 }

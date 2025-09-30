@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import axios from "axios";
+import styles from './page.module.css';
 
 export default function Delete() {
     const [commentId, setCommentId] = useState("");
@@ -10,12 +11,14 @@ export default function Delete() {
     const [success, setSuccess] = useState(false);
 
     const buscarComentario = async () => {
+        if (!commentId) return;
+        
         setLoading(true);
         setError(false);
 
         try {
             const response = await axios.get(
-                `https://jsonplaceholder.typicode.com/posts/${commentId}`
+                `https://jsonplaceholder.typicode.com/comments/${commentId}`
             );
             setComment(response.data);
         } catch (error) {
@@ -43,41 +46,88 @@ export default function Delete() {
     };
 
     return (
-        <div>
-            <h1>Deletar Comentário</h1>
+        <div className={styles.container}>
+            <h1 className={styles.title}>Deletar Comentário</h1>
 
-            <div>
-                <input
-                    type="number"
-                    value={commentId}
-                    onChange={(e) => setCommentId(e.target.value)}
-                    placeholder="ID do comentário"
-                />
-                <button onClick={buscarComentario} disabled={!commentId || loading}>
-                    {loading ? "Buscando..." : "Buscar"}
-                </button>
+            <div className={styles.searchSection}>
+                <div className={styles.searchGroup}>
+                    <input
+                        type="number"
+                        value={commentId}
+                        onChange={(e) => setCommentId(e.target.value)}
+                        placeholder="ID do comentário"
+                        className={styles.searchInput}
+                    />
+                    <button 
+                        onClick={buscarComentario} 
+                        disabled={!commentId || loading}
+                        className={styles.searchButton}
+                    >
+                        {loading ? (
+                            <div className={styles.loading}>
+                                <div className={styles.spinner}></div>
+                                Buscando...
+                            </div>
+                        ) : "Buscar"}
+                    </button>
+                </div>
             </div>
 
             {comment && (
-                <div>
-                    <h2>Comentário #{comment.id}</h2>
-                    <p>
-                        <strong>Nome:</strong> {comment.name}
-                    </p>
-                    <p>
-                        <strong>Email:</strong> {comment.email}
-                    </p>
-                    <p>
-                        <strong>Comentário:</strong> {comment.body}
-                    </p>
-                    <button onClick={deletarComentario} disabled={loading}>
-                        {loading ? "Deletando..." : "Deletar"}
+                <div className={styles.commentPreview}>
+                    <h2 className={styles.previewTitle}>
+                        Comentário #{comment.id}
+                    </h2>
+                    
+                    <div className={`${styles.commentField} ${styles.nameField}`}>
+                        <div className={styles.fieldLabel}>Nome</div>
+                        <div className={styles.fieldValue}>{comment.name}</div>
+                    </div>
+                    
+                    <div className={`${styles.commentField} ${styles.emailField}`}>
+                        <div className={styles.fieldLabel}>Email</div>
+                        <div className={styles.fieldValue}>{comment.email}</div>
+                    </div>
+                    
+                    <div className={`${styles.commentField} ${styles.bodyField}`}>
+                        <div className={styles.fieldLabel}>Comentário</div>
+                        <div className={styles.fieldValue}>{comment.body}</div>
+                    </div>
+                    
+                    <div className={styles.warningSection}>
+                        <div className={styles.warningIcon}>⚠️</div>
+                        <div className={styles.warningText}>ATENÇÃO!</div>
+                        <div className={styles.warningSubtext}>
+                            Esta ação não pode ser desfeita. O comentário será permanentemente removido.
+                        </div>
+                    </div>
+                    
+                    <button 
+                        onClick={deletarComentario} 
+                        disabled={loading}
+                        className={styles.deleteButton}
+                    >
+                        {loading ? (
+                            <div className={styles.loading}>
+                                <div className={styles.spinner}></div>
+                                Deletando...
+                            </div>
+                        ) : "🗑️ Deletar Comentário"}
                     </button>
                 </div>
             )}
 
-            {error && <p>❌ Erro na operação</p>}
-            {success && <p>✅ Comentário deletado com sucesso!</p>}
+            {error && (
+                <div className={`${styles.message} ${styles.error}`}>
+                    ❌ Erro na operação
+                </div>
+            )}
+            
+            {success && (
+                <div className={`${styles.message} ${styles.success}`}>
+                    ✅ Comentário deletado com sucesso!
+                </div>
+            )}
         </div>
     );
 }

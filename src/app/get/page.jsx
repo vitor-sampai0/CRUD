@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import styles from './page.module.css';
 
 // https://jsonplaceholder.typicode.com/
 // https://jsonplaceholder.typicode.com/comments
@@ -35,41 +36,61 @@ export default function Get() {
         buscarComments();
     }, []);
 
-    return (
-        <div>
-            <h1>Lista de Comentários</h1>
+    if (loading) {
+        return (
+            <div className={styles.container}>
+                <div className={styles.loadingContainer}>
+                    <div className={styles.spinner}></div>
+                    Carregando comentários...
+                </div>
+            </div>
+        );
+    }
 
-            <h2>Comentários ({comments.length})</h2>
-            {loading ? (
-                "Carregando..."
+    if (error) {
+        return (
+            <div className={styles.container}>
+                <div className={styles.errorContainer}>
+                    <div className={styles.errorIcon}>❌</div>
+                    <div className={styles.errorMessage}>
+                        Ocorreu um erro ao buscar os comentários.
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className={styles.container}>
+            <h1 className={styles.title}>Lista de Comentários</h1>
+            <h2 className={styles.subtitle}>Comentários ({comments.length})</h2>
+            
+            {comments.length === 0 ? (
+                <div className={styles.emptyState}>
+                    Nenhum comentário encontrado.
+                </div>
             ) : (
-                <ul>
+                <ul className={styles.commentsList}>
                     {comments.map((comment) => (
                         <li
                             key={comment.id}
                             onClick={() => navegarParaComentario(comment.id)}
-                            style={{ cursor: "pointer" }}>
-                            <hr />
-                            <p>
-                                <strong>ID:</strong> {comment.id}
-                            </p>
-                            <p>
-                                <strong>Post ID:</strong> {comment.postId}
-                            </p>
-                            <p>
-                                <strong>Nome:</strong> {comment.name}
-                            </p>
-                            <p>
-                                <strong>Email:</strong> {comment.email}
-                            </p>
-                            <p>
-                                <strong>Comentário:</strong> {comment.body}
-                            </p>
+                            className={styles.commentCard}
+                        >
+                            <div className={styles.commentHeader}>
+                                <div className={styles.commentIds}>
+                                    <span className={styles.commentId}>ID: {comment.id}</span>
+                                    <span className={styles.postId}>Post: {comment.postId}</span>
+                                </div>
+                            </div>
+                            
+                            <div className={styles.commentName}>{comment.name}</div>
+                            <div className={styles.commentEmail}>{comment.email}</div>
+                            <div className={styles.commentBody}>{comment.body}</div>
                         </li>
                     ))}
                 </ul>
             )}
-            {error && <p>❌ Ocorreu um erro ao buscar os comentários.</p>}
         </div>
     );
 }
